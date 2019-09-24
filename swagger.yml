@@ -1,0 +1,83 @@
+swagger: "2.0"
+produces:
+  - application/json
+consumes:
+  - application/json
+info:
+  description: REST API for taking and managing bids for an auction
+  title: Auction API
+  version: 1.0.0
+basePath: /api/v1
+schemes:
+  - http
+
+paths:
+  /winners:
+    get:
+      tags:
+        - Management
+      responses:
+        200:
+          description: OK
+  /winners/{item_number}:
+    get:
+      tags:
+        - Management
+      parameters:
+        - in: path
+          name: item_number
+          required: true
+          type: integer
+          minimum: 1
+          description: Item number fetch bids for
+      responses:
+        200:
+          description: OK
+
+  /bid:
+    get:
+      tags:
+        - Bidding
+      responses:
+        200:
+          description: OK get all bids
+  /bid/{item_number}:
+    post:
+      tags:
+        - Bidding
+      parameters:
+        - in: path
+          name: item_number
+          required: true
+          type: integer
+          minimum: 1
+          description: Item number to bid on
+        - in: body
+          name: bid
+          schema:
+            type: object
+            $ref: "#/definitions/Bid"
+      responses:
+        200:
+          description: OK
+
+definitions:
+  Bid:
+    type: object
+    required:
+      - item_number
+      - bid_amount
+      - bidder_name
+      - bidder_email
+    properties: 
+      item_number:
+        type: integer
+      bid_amount:
+        type: integer
+      bidder_name:
+        type: string
+      bidder_email:
+        type: string
+  WinnersResponse:
+    type: object
+
