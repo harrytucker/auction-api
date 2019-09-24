@@ -3,15 +3,20 @@
 package restapi
 
 import (
+	"context"
 	"crypto/tls"
 	"net/http"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	log "github.com/sirupsen/logrus"
 
+	"github.com/harrytucker/auction-api/database"
 	"github.com/harrytucker/auction-api/restapi/operations"
 	"github.com/harrytucker/auction-api/restapi/operations/bidding"
+
+	"github.com/harrytucker/auction-api/handlers"
 )
 
 //go:generate swagger generate server --target ../../auction-api --name Auction --spec ../swagger.yml
@@ -33,6 +38,16 @@ func configureAPI(api *operations.AuctionAPI) http.Handler {
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
+
+	db, err := database.GetDB()
+	if err != nil {
+		log.Error(err)
+	}
+
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, handlers.CtxKey("database"), db)
+
+	api.BiddingMakeBidHandler = handlers.CreateMakeBidHandler(ctx)
 
 	if api.BiddingGetAllBidsHandler == nil {
 		api.BiddingGetAllBidsHandler = bidding.GetAllBidsHandlerFunc(func(params bidding.GetAllBidsParams) middleware.Responder {
