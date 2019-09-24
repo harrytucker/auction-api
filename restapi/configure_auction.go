@@ -11,7 +11,7 @@ import (
 	middleware "github.com/go-openapi/runtime/middleware"
 
 	"github.com/harrytucker/auction-api/restapi/operations"
-	"github.com/harrytucker/auction-api/restapi/operations/management"
+	"github.com/harrytucker/auction-api/restapi/operations/bidding"
 )
 
 //go:generate swagger generate server --target ../../auction-api --name Auction --spec ../swagger.yml
@@ -34,9 +34,19 @@ func configureAPI(api *operations.AuctionAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.ManagementGetWinnersHandler == nil {
-		api.ManagementGetWinnersHandler = management.GetWinnersHandlerFunc(func(params management.GetWinnersParams) middleware.Responder {
-			return middleware.NotImplemented("operation management.GetWinners has not yet been implemented")
+	if api.BiddingGetAllBidsHandler == nil {
+		api.BiddingGetAllBidsHandler = bidding.GetAllBidsHandlerFunc(func(params bidding.GetAllBidsParams) middleware.Responder {
+			return middleware.NotImplemented("operation bidding.GetAllBids has not yet been implemented")
+		})
+	}
+	if api.BiddingGetAllBidsForItemHandler == nil {
+		api.BiddingGetAllBidsForItemHandler = bidding.GetAllBidsForItemHandlerFunc(func(params bidding.GetAllBidsForItemParams) middleware.Responder {
+			return middleware.NotImplemented("operation bidding.GetAllBidsForItem has not yet been implemented")
+		})
+	}
+	if api.BiddingMakeBidHandler == nil {
+		api.BiddingMakeBidHandler = bidding.MakeBidHandlerFunc(func(params bidding.MakeBidParams) middleware.Responder {
+			return middleware.NotImplemented("operation bidding.MakeBid has not yet been implemented")
 		})
 	}
 

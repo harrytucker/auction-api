@@ -8,6 +8,8 @@ restapi/*
 
 cmd/
 
+models/
+
 ### Go ###
 # Binaries for programs and plugins
 *.exe

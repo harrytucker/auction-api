@@ -12,54 +12,83 @@ schemes:
   - http
 
 paths:
-  /winners:
-    get:
-      tags:
-        - Management
-      responses:
-        200:
-          description: OK
-  /winners/{item_number}:
-    get:
-      tags:
-        - Management
-      parameters:
-        - in: path
-          name: item_number
-          required: true
-          type: integer
-          minimum: 1
-          description: Item number fetch bids for
-      responses:
-        200:
-          description: OK
+  # /winners:
+  #   get:
+  #     tags:
+  #       - Management
+  #     responses:
+  #       200:
+  #         description: OK
+  # /winners/{item_number}:
+  #   get:
+  #     tags:
+  #       - Management
+  #     parameters:
+  #       - in: path
+  #         name: item_number
+  #         required: true
+  #         type: integer
+  #         minimum: 1
+  #         description: Item number fetch bids for
+  #     responses:
+  #       200:
+  #         description: OK
 
-  /bid:
+  /bids:
     get:
+      operationId: getAllBids
       tags:
         - Bidding
       responses:
         200:
           description: OK get all bids
-  /bid/{item_number}:
-    post:
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ItemSummary"
+  /bids/{item_number}:
+    get:
+      operationId: getAllBidsForItem
       tags:
         - Bidding
       parameters:
-        - in: path
-          name: item_number
+        - name: item_number
+          in: path
           required: true
           type: integer
           minimum: 1
           description: Item number to bid on
-        - in: body
-          name: bid
+      responses:
+        200:
+          description: OK get bids for this item
+          schema:
+            type: object
+            $ref: "#/definitions/ItemSummary"
+    post:
+      operationId: makeBid
+      tags:
+        - Bidding
+      parameters:
+        - name: item_number
+          in: path
+          required: true
+          type: integer
+          minimum: 1
+          description: Item number to bid on
+        - name: bid
+          in: body
           schema:
             type: object
             $ref: "#/definitions/Bid"
       responses:
         200:
           description: OK
+          schema:
+            $ref: "#/definitions/Bid"
+        400:
+          description: Bad format
+        403:
+          description: Bid disallowed
 
 definitions:
   Bid:
@@ -69,15 +98,21 @@ definitions:
       - bid_amount
       - bidder_name
       - bidder_email
-    properties: 
+    properties:
       item_number:
         type: integer
+        example: 15
       bid_amount:
         type: integer
+        example: 20
       bidder_name:
         type: string
+        example: John Doe
       bidder_email:
         type: string
-  WinnersResponse:
-    type: object
-
+        format: email
+        example: johndoe@mail.com
+  ItemSummary:
+    type: array
+    items:
+      $ref: "#/definitions/Bid"
