@@ -21,12 +21,6 @@ type MakeBid struct {
 	ctx context.Context
 }
 
-// db representation of a bid
-type bid struct {
-	gorm.Model
-	models.Bid
-}
-
 // Handle contains business logic for making a bid on an item
 func (mb *MakeBid) Handle(params bidding.MakeBidParams) middleware.Responder {
 	log.WithFields(log.Fields{
