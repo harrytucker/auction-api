@@ -25,9 +25,9 @@ type MakeBid struct {
 func (mb *MakeBid) Handle(params bidding.MakeBidParams) middleware.Responder {
 	log.WithFields(log.Fields{
 		"Item Number": params.ItemNumber,
-		"Bid Amount":  params.Bid.BidAmount,
-		"Bidder":      params.Bid.BidderName,
-	}).Info("Bid request made")
+		"Bid Amount":  *params.Bid.BidAmount,
+		"Bidder":      *params.Bid.BidderName,
+	}).Info("Bid request received")
 
 	db := mb.ctx.Value(CtxKey("database")).(*gorm.DB)
 	db.AutoMigrate(&bid{})
@@ -40,5 +40,6 @@ func (mb *MakeBid) Handle(params bidding.MakeBidParams) middleware.Responder {
 	}}
 	db.Create(&bid)
 
+	log.WithField("Results", bid).Info("Successful bid!")
 	return bidding.NewMakeBidOK().WithPayload(params.Bid)
 }

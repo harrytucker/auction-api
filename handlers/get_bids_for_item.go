@@ -21,13 +21,14 @@ type GetAllBidsForItem struct {
 	ctx context.Context
 }
 
-// Handle contains business logic for making a bid on an item
+// Handle contains business logic for getting all the bids for an item
 func (gab *GetAllBidsForItem) Handle(params bidding.GetAllBidsForItemParams) middleware.Responder {
-	log.Info("Request received to get all bids")
+	log.Info("Get bids for item request received")
 	db := gab.ctx.Value(CtxKey("database")).(*gorm.DB)
 
 	bids := models.ItemSummary{}
 	db.Where("item_number = ?", params.ItemNumber).Find(&bids)
 
+	log.Info("Successful get!")
 	return bidding.NewGetAllBidsForItemOK().WithPayload(bids)
 }
