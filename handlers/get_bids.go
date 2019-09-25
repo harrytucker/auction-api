@@ -33,7 +33,7 @@ func (gab *GetAllBids) Handle(params bidding.GetAllBidsParams) middleware.Respon
 	lastIndex := 0
 	for i, bid := range allBids {
 		if i > 0 {
-			if *allBids[i-1].ItemNumber != *bid.ItemNumber {
+			if allBids[i-1].ItemNumber != bid.ItemNumber {
 				results = append(results, allBids[lastIndex:i])
 				lastIndex = i
 			}

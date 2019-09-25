@@ -33,7 +33,7 @@ func (mb *MakeBid) Handle(params bidding.MakeBidParams) middleware.Responder {
 	db.AutoMigrate(&bid{})
 
 	bid := bid{Bid: models.Bid{
-		ItemNumber:  &params.ItemNumber,
+		ItemNumber:  params.ItemNumber,
 		BidAmount:   params.Bid.BidAmount,
 		BidderName:  params.Bid.BidderName,
 		BidderEmail: params.Bid.BidderEmail,
@@ -41,5 +41,6 @@ func (mb *MakeBid) Handle(params bidding.MakeBidParams) middleware.Responder {
 	db.Create(&bid)
 
 	log.WithField("Results", bid).Info("Successful bid!")
+	params.Bid.ItemNumber = params.ItemNumber
 	return bidding.NewMakeBidOK().WithPayload(params.Bid)
 }

@@ -72,13 +72,13 @@ definitions:
   Bid:
     type: object
     required:
-      - item_number
       - bid_amount
       - bidder_name
       - bidder_email
     properties:
       item_number:
         type: integer
+        readOnly: true
         example: 15
       bid_amount:
         type: integer
