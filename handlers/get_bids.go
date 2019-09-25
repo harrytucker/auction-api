@@ -27,11 +27,23 @@ func (gab *GetAllBids) Handle(params bidding.GetAllBidsParams) middleware.Respon
 	db := gab.ctx.Value(CtxKey("database")).(*gorm.DB)
 
 	var allBids []*models.Bid
-	db.Find(&allBids)
+	db.Order("item_number asc, bid_amount desc").Find(&allBids)
 
-	var items []models.ItemSummary
-	items = append(items, allBids)
+	var results []models.ItemSummary
+	lastIndex := 0
+	for i, bid := range allBids {
+		if i > 0 {
+			if *allBids[i-1].ItemNumber != *bid.ItemNumber {
+				results = append(results, allBids[lastIndex:i])
+				lastIndex = i
+			}
+		}
 
-	log.WithField("Results", items).Info("Successful get!")
-	return bidding.NewGetAllBidsOK().WithPayload(items)
+		if i == (len(allBids) - 1) {
+			results = append(results, allBids[lastIndex:len(allBids)])
+		}
+	}
+
+	log.WithField("Results", results).Info("Successful get!")
+	return bidding.NewGetAllBidsOK().WithPayload(results)
 }
