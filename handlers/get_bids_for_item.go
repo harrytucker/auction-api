@@ -27,7 +27,7 @@ func (gab *GetAllBidsForItem) Handle(params bidding.GetAllBidsForItemParams) mid
 	db := gab.ctx.Value(CtxKey("database")).(*gorm.DB)
 
 	bids := models.ItemSummary{}
-	db.Where("item_number = ?", params.ItemNumber).Find(&bids)
+	db.Where("item_number = ?", params.ItemNumber).Order("bid_amount desc").Find(&bids)
 
 	log.Info("Successful get!")
 	return bidding.NewGetAllBidsForItemOK().WithPayload(bids)
