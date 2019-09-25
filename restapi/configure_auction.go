@@ -49,6 +49,7 @@ func configureAPI(api *operations.AuctionAPI) http.Handler {
 
 	api.BiddingMakeBidHandler = handlers.CreateMakeBidHandler(ctx)
 	api.BiddingGetAllBidsHandler = handlers.CreateGetBidsHandler(ctx)
+	api.BiddingGetAllBidsForItemHandler = handlers.CreateGetBidsForItemHandler(ctx)
 
 	if api.BiddingGetAllBidsHandler == nil {
 		api.BiddingGetAllBidsHandler = bidding.GetAllBidsHandlerFunc(func(params bidding.GetAllBidsParams) middleware.Responder {

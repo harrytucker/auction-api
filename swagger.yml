@@ -12,28 +12,6 @@ schemes:
   - http
 
 paths:
-  # /winners:
-  #   get:
-  #     tags:
-  #       - Management
-  #     responses:
-  #       200:
-  #         description: OK
-  # /winners/{item_number}:
-  #   get:
-  #     tags:
-  #       - Management
-  #     parameters:
-  #       - in: path
-  #         name: item_number
-  #         required: true
-  #         type: integer
-  #         minimum: 1
-  #         description: Item number fetch bids for
-  #     responses:
-  #       200:
-  #         description: OK
-
   /bids:
     get:
       operationId: getAllBids
