@@ -11,7 +11,7 @@ import (
 func GetDB() (*gorm.DB, error) {
 	log.Debug("Opening database connection")
 
-	db, err := gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=postgres password=postgres sslmode=disable")
+	db, err := gorm.Open("postgres", "host=127.0.0.1 port=5432 user=postgres dbname=postgres password=postgres sslmode=disable")
 	if err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
