@@ -1,0 +1,13 @@
+time="2019-10-08T11:47:09+01:00" level=info msg="Serving auction at http://[::]:61125"
+time="2019-10-08T11:47:27+01:00" level=info msg="Item statistics request received" Item Number=78
+time="2019-10-08T11:47:28+01:00" level=info msg="Item statistics request received" Item Number=77
+time="2019-10-08T11:47:28+01:00" level=info msg="Item statistics request received" Item Number=78
+time="2019-10-08T11:47:29+01:00" level=info msg="Item statistics request received" Item Number=79
+time="2019-10-08T11:47:29+01:00" level=info msg="Item statistics request received" Item Number=80
+time="2019-10-08T11:47:29+01:00" level=info msg="Item statistics request received" Item Number=81
+time="2019-10-08T11:47:29+01:00" level=info msg="Item statistics request received" Item Number=82
+time="2019-10-08T11:47:29+01:00" level=info msg="Item statistics request received" Item Number=83
+time="2019-10-08T11:47:30+01:00" level=info msg="Item statistics request received" Item Number=84
+time="2019-10-08T11:47:30+01:00" level=info msg="Item statistics request received" Item Number=85
+time="2019-10-08T11:47:42+01:00" level=info msg="Shutting down... "
+time="2019-10-08T11:47:42+01:00" level=info msg="Stopped serving auction at http://[::]:61125"

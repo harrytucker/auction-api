@@ -5,17 +5,22 @@ package restapi
 import (
 	"context"
 	"crypto/tls"
+	"io"
 	"net/http"
+	"os"
+	"time"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
-	log "github.com/sirupsen/logrus"
 	"github.com/rs/cors"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/harrytucker/auction-api/database"
+	"github.com/harrytucker/auction-api/models"
 	"github.com/harrytucker/auction-api/restapi/operations"
 	"github.com/harrytucker/auction-api/restapi/operations/bidding"
+	"github.com/harrytucker/auction-api/restapi/operations/statistics"
 
 	"github.com/harrytucker/auction-api/handlers"
 )
@@ -30,11 +35,15 @@ func configureAPI(api *operations.AuctionAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
 
-	// Set your custom logger if needed. Default one is log.Printf
-	// Expected interface func(string, ...interface{})
-	//
-	// Example:
-	// api.Logger = log.Printf
+	// logging configuration
+	api.Logger = log.Infof
+
+	logFile, err := os.Create("logs/log_" + time.Now().Format("2006-01-02_15:04:05"))
+	if err != nil {
+		log.Fatal("Failed to create logfile")
+	}
+	mw := io.Writer(logFile)
+	log.SetOutput(mw)
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
@@ -49,26 +58,44 @@ func configureAPI(api *operations.AuctionAPI) http.Handler {
 	ctx = context.WithValue(ctx, handlers.CtxKey("database"), db)
 
 	api.BiddingMakeBidHandler = handlers.CreateMakeBidHandler(ctx)
-	api.BiddingGetAllBidsHandler = handlers.CreateGetBidsHandler(ctx)
-	api.BiddingGetAllBidsForItemHandler = handlers.CreateGetBidsForItemHandler(ctx)
+	api.StatisticsGetBidStatsHandler = handlers.CreateGetStatsHandler(ctx)
 
-	if api.BiddingGetAllBidsHandler == nil {
-		api.BiddingGetAllBidsHandler = bidding.GetAllBidsHandlerFunc(func(params bidding.GetAllBidsParams) middleware.Responder {
-			return middleware.NotImplemented("operation bidding.GetAllBids has not yet been implemented")
-		})
-	}
-	if api.BiddingGetAllBidsForItemHandler == nil {
-		api.BiddingGetAllBidsForItemHandler = bidding.GetAllBidsForItemHandlerFunc(func(params bidding.GetAllBidsForItemParams) middleware.Responder {
-			return middleware.NotImplemented("operation bidding.GetAllBidsForItem has not yet been implemented")
-		})
-	}
+	// DISABLED WHILE AUCTION IS ACTIVE TO PREVENT MEDDLING BY CHEEKY ENGINEERS
+	//
+	// api.BiddingGetAllBidsHandler = handlers.CreateGetBidsHandler(ctx)
+	// api.BiddingGetAllBidsForItemHandler = handlers.CreateGetBidsForItemHandler(ctx)
+	disabledError := models.ErrorResponse{ErrorMessage: "SELF DESTRUCT ACTIVATED: Please stop messing with the auction API"}
+
+	api.BiddingGetAllBidsHandler = bidding.GetAllBidsHandlerFunc(func(params bidding.GetAllBidsParams) middleware.Responder {
+		log.WithFields(log.Fields{
+			"path":      params.HTTPRequest.URL.Path,
+			"requester": params.HTTPRequest.RemoteAddr,
+		}).Warn("Request attempting to see extra bid info")
+		return bidding.NewGetAllBidsUnauthorized().WithPayload(&disabledError)
+	})
+
+	api.BiddingGetAllBidsForItemHandler = bidding.GetAllBidsForItemHandlerFunc(func(params bidding.GetAllBidsForItemParams) middleware.Responder {
+		log.WithFields(log.Fields{
+			"path":      params.HTTPRequest.URL.Path,
+			"requester": params.HTTPRequest.RemoteAddr,
+		}).Warn("Request attempting to see extra bid info")
+		return bidding.NewGetAllBidsUnauthorized().WithPayload(&disabledError)
+	})
 	if api.BiddingMakeBidHandler == nil {
 		api.BiddingMakeBidHandler = bidding.MakeBidHandlerFunc(func(params bidding.MakeBidParams) middleware.Responder {
 			return middleware.NotImplemented("operation bidding.MakeBid has not yet been implemented")
 		})
 	}
+	if api.StatisticsGetBidStatsHandler == nil {
+		api.StatisticsGetBidStatsHandler = statistics.GetBidStatsHandlerFunc(func(params statistics.GetBidStatsParams) middleware.Responder {
+			return middleware.NotImplemented("operation statistics.GetBidStats has not yet been implemented")
+		})
+	}
 
-	api.ServerShutdown = func() {}
+	api.ServerShutdown = func() {
+		db.Close()
+		logFile.Close()
+	}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }

@@ -1,0 +1,7 @@
+time="2019-10-08T11:55:12+01:00" level=info msg="Serving auction at http://[::]:61125"
+time="2019-10-08T11:55:28+01:00" level=warning msg="Request attempting to see extra bid info" path=/api/v1/bids requester="[::1]:56782"
+time="2019-10-08T11:55:31+01:00" level=info msg="Item statistics request received" Item Number=72
+time="2019-10-08T11:55:36+01:00" level=info msg="Item statistics request received" Item Number=74
+time="2019-10-08T11:55:40+01:00" level=warning msg="Request attempting to see extra bid info" path=/api/v1/bids/74 requester="[::1]:56782"
+time="2019-10-08T11:55:43+01:00" level=info msg="Shutting down... "
+time="2019-10-08T11:55:43+01:00" level=info msg="Stopped serving auction at http://[::]:61125"
